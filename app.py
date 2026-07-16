@@ -38,11 +38,47 @@ import gspread
 import pandas as pd
 import sqlite3
 import streamlit as st
+import streamlit.components.v1 as components
 from google.oauth2.service_account import Credentials
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaIoBaseDownload, MediaFileUpload
 
 st.set_page_config(page_title="Test Oposiciones Biblioteca", page_icon="📚", layout="wide")
+
+# ----------------------------------------------------------------------
+# PWA: enlaza el manifest y los iconos en el <head> real del documento.
+# st.markdown no llega al <head>, así que lo hacemos desde un iframe con
+# permiso para tocar el documento padre (mismo origen).
+# ----------------------------------------------------------------------
+components.html(
+    """
+    <script>
+    (function () {
+        const parentDoc = window.parent.document;
+        if (!parentDoc.querySelector('link[rel="manifest"]')) {
+            const link = parentDoc.createElement('link');
+            link.rel = 'manifest';
+            link.href = '/app/static/manifest.json';
+            parentDoc.head.appendChild(link);
+        }
+        if (!parentDoc.querySelector('link[rel="icon"]')) {
+            const icon = parentDoc.createElement('link');
+            icon.rel = 'icon';
+            icon.href = '/app/static/icon-192.png';
+            parentDoc.head.appendChild(icon);
+        }
+        if (!parentDoc.querySelector('meta[name="theme-color"]')) {
+            const meta = parentDoc.createElement('meta');
+            meta.name = 'theme-color';
+            meta.content = '#ff4b4b';
+            parentDoc.head.appendChild(meta);
+        }
+    })();
+    </script>
+    """,
+    height=0,
+    width=0,
+)
 
 st.markdown(
     """
