@@ -120,7 +120,15 @@ st.markdown(
 
 # Copia de trabajo local: en Cloud Run /tmp es escribible durante la sesión
 DB_PATH = "/tmp/examenes.db"
-DB_FILE_ID = os.environ.get("DB_FILE_ID") or st.secrets.get("db_file_id")
+def _leer_secret(nombre, valor_por_defecto=None):
+    """Lee st.secrets[nombre] solo si existe secrets.toml; si no, devuelve el valor por defecto."""
+    try:
+        return st.secrets.get(nombre, valor_por_defecto)
+    except Exception:
+        return valor_por_defecto
+
+
+DB_FILE_ID = os.environ.get("DB_FILE_ID") or _leer_secret("db_file_id")
 
 SCOPES = [
     "https://www.googleapis.com/auth/spreadsheets.readonly",
@@ -138,7 +146,12 @@ def _credenciales_google():
     if info_env:
         info = json.loads(info_env)
     else:
-        info = st.secrets["gcp_service_account"]
+        info = _leer_secret("gcp_service_account")
+        if not info:
+            raise RuntimeError(
+                "No se encontró GCP_SERVICE_ACCOUNT_JSON: define esa variable de entorno "
+                "en Render con el JSON de la cuenta de servicio."
+            )
     return Credentials.from_service_account_info(info, scopes=SCOPES)
 
 
@@ -270,9 +283,18 @@ def asegurar_esquema():
 # LOGIN (Google Sheets) — ahora también devuelve el rol
 # ----------------------------------------------------------------------
 
+def _obtener_sheet_id():
+    return os.environ.get("SHEET_ID") or _leer_secret("sheet_id")
+
+
 def _obtener_usuarios():
     cliente = _cliente_google_sheets()
-    sheet_id = os.environ.get("SHEET_ID") or st.secrets["sheet_id"]
+    sheet_id = _obtener_sheet_id()
+    if not sheet_id:
+        raise RuntimeError(
+            "No se encontró SHEET_ID: define la variable de entorno SHEET_ID en Render "
+            "(Environment) con el ID del Google Sheet de usuarios."
+        )
     hoja = cliente.open_by_key(sheet_id).sheet1
     return hoja.get_all_records()  # [{"usuario": ..., "contraseña": ..., "rol": ...}, ...]
 
