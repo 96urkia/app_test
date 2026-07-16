@@ -1,0 +1,39 @@
+{
+  "name": "Test Oposiciones Biblioteca",
+  "short_name": "TestBiblio",
+  "description": "Practica tests de oposiciones para bibliotecas",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "dir": "ltr",
+  "lang": "es",
+  "background_color": "#ffffff",
+  "theme_color": "#ff4b4b",
+  "icons": [
+    {
+      "src": "/app/static/icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any"
+    },
+    {
+      "src": "/app/static/icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any"
+    },
+    {
+      "src": "/app/static/icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/app/static/icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "maskable"
+    }
+  ]
+}
